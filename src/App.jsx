@@ -37,6 +37,9 @@ import CustomPagingInfo from "./components/customPagingInfo/CustomPagingInfo";
 import Footer from "./components/footer/Footer";
 import HomeFooter from "./components/footer/HomeFooter";
 import theme from "./chakra/chakra-theme";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SearchQueryProvider } from "./context/SearchQueryContext";
+import useSearchQuery from "./hooks/useSearchQuery";
 
 const { hostIdentifier, searchKey, endpointBase, engineName } = getConfig();
 const connector = new AppSearchAPIConnector({
@@ -68,6 +71,8 @@ const ScrollTop = ({ current }) => {
   return null;
 };
 
+const queryClient = new QueryClient();
+
 export default function App() {
   useSearchFocusHotkey();
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,52 +86,83 @@ export default function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <SearchProvider config={config}>
-        <WithSearch
-          mapContextToProps={({
-            wasSearched,
-            results,
-            current,
-            isLoading,
-            filters,
-          }) => ({
-            wasSearched,
-            results,
-            current,
-            isLoading,
-            filters,
-          })}
-        >
-          {({ wasSearched, results, current, isLoading }) => {
-            return (
-              <div className="App btc-search">
-                <ErrorBoundary>
-                  <ScrollTop current={current} />
-                  {isLoading && <LoadingBar />}
-                  <div className="header">
-                    <img src={logo} className="logo" alt="bitcoin logo" />
-                    <p className="description">Technical Bitcoin Search</p>
+      <QueryClientProvider client={queryClient}>
+        <SearchQueryProvider>
+          <SearchProvider config={config}>
+            <WithSearch
+              mapContextToProps={({
+                wasSearched,
+                results,
+                current,
+                isLoading,
+                filters,
+              }) => ({
+                wasSearched,
+                results,
+                current,
+                isLoading,
+                filters,
+              })}
+            >
+              {({ wasSearched, results, current, isLoading }) => {
+                return (
+                  <div className="App btc-search">
+                    <ErrorBoundary>
+                      <ScrollTop current={current} />
+                      {isLoading && <LoadingBar />}
+                      <div className="header">
+                        <img src={logo} className="logo" alt="bitcoin logo" />
+                        <p className="description">Technical Bitcoin Search</p>
+                      </div>
+                      <Layout
+                        header={<Header key={results} openForm={openForm} />}
+                        sideContent={<SideBar />}
+                        bodyContent={
+                          <CustomResults shouldTrackClickThrough={true} />
+                        }
+                        bodyHeader={<CustomPagingInfo />}
+                        bodyFooter={<Footer />}
+                      />
+                      {wasSearched && !results.length && (
+                        <NoResults openForm={openForm} />
+                      )}
+                      <FormModal formOpen={modalOpen} closeForm={closeForm} />
+                      <TestNewApi />
+                      <HomeFooter />
+                    </ErrorBoundary>
                   </div>
-                  <Layout
-                    header={<Header key={results} openForm={openForm} />}
-                    sideContent={<SideBar />}
-                    bodyContent={
-                      <CustomResults shouldTrackClickThrough={true} />
-                    }
-                    bodyHeader={<CustomPagingInfo />}
-                    bodyFooter={<Footer />}
-                  />
-                  {wasSearched && !results.length && (
-                    <NoResults openForm={openForm} />
-                  )}
-                  <FormModal formOpen={modalOpen} closeForm={closeForm} />
-                  <HomeFooter />
-                </ErrorBoundary>
-              </div>
-            );
-          }}
-        </WithSearch>
-      </SearchProvider>
+                );
+              }}
+            </WithSearch>
+          </SearchProvider>
+        </SearchQueryProvider>
+      </QueryClientProvider>
     </ChakraProvider>
   );
+}
+
+export const TestNewApi = () => {
+  const { queryResult, setSearchTerm } = useSearchQuery();
+  console.log(queryResult);
+
+  // const testFetch = async () => {
+  //   const res = await fetch("http://localhost:3000/api/v1/search", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       searchString: "bip",
+  //     }),
+  //   });
+  //   const ss = await res.json();
+  //   console.log("fin", ss);
+  // };
+
+  return (
+    // <button onClick={testFetch}>
+    <button onClick={() => setSearchTerm("bip")}>
+      Test me!
+    </button>
+  )
 }
