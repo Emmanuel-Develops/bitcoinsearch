@@ -21,9 +21,9 @@ const CustomResults = ({ clickThroughTags, shouldTrackClickThrough }) => {
   const { queryResult, setSearchTerm } = useSearchQuery();
 
   // empty search string or initial page search without filters should not be displayed
-  if (hiddenBody) {
-    return null;
-  }
+  // if (hiddenBody) {
+  //   return null;
+  // }
 
   // formattedResults is an array of array of objects [[{}{}{}]], where similar results are grouped in their arrays
   // unique results will be a single object in their array, [[{}],[{}]]

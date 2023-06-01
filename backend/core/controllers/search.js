@@ -8,12 +8,16 @@ const INDEX = environment.parsed.INDEX;
 async function search(request, response){
     try {
         let searchString = request.body.searchString;
+        let size = request.body.size;
+        let from = request.body.from;
         let facets = request.body.facets
         let searchQuery = buildQuery(searchString, facets);
 
         const result = await client.search({
             index: INDEX,
             body: searchQuery,
+            size,
+            from
         });
         
         return response.status(200).json({

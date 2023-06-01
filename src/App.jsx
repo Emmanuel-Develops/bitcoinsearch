@@ -142,7 +142,7 @@ export default function App() {
 }
 
 export const TestNewApi = () => {
-  const { queryResult, setSearchTerm } = useSearchQuery();
+  const { queryResult, setSearchTerm, makeQuery } = useSearchQuery();
   console.log(queryResult);
 
   // const testFetch = async () => {
@@ -161,7 +161,7 @@ export const TestNewApi = () => {
 
   return (
     // <button onClick={testFetch}>
-    <button onClick={() => setSearchTerm("bip")}>
+    <button onClick={() => makeQuery("bip")}>
       Test me!
     </button>
   )
