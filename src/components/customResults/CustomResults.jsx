@@ -18,7 +18,7 @@ const CustomResults = ({ clickThroughTags, shouldTrackClickThrough }) => {
   } = useSearchContext();
   const { hiddenBody } = useIsInitialStateWithoutFilter();
 
-  const { queryResult, setSearchTerm } = useSearchQuery();
+  const { queryResult } = useSearchQuery();
 
   // empty search string or initial page search without filters should not be displayed
   // if (hiddenBody) {

@@ -142,7 +142,7 @@ export default function App() {
 }
 
 export const TestNewApi = () => {
-  const { queryResult, setSearchTerm, makeQuery } = useSearchQuery();
+  const { queryResult, makeQuery } = useSearchQuery();
   console.log(queryResult);
 
   // const testFetch = async () => {

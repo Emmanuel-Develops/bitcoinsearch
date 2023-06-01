@@ -9,21 +9,19 @@ import useSearchQuery from "../hooks/useSearchQuery";
 const MemoizedHomeFacetSelection = React.memo(HomeFacetSelection);
 
 const Header = ({ openForm }) => {
-  const { setSearchTerm } = useSearchQuery();
+  const { makeQuery } = useSearchQuery();
   const SearchInputWrapper = ({ ...rest }) => {
     return <SearchInput openForm={openForm} {...rest} />;
   };
 
   const handleSubmit = (input) => {
-    console.log("input", input)
-    setSearchTerm(input);
-  }
+    makeQuery(input);
+  };
 
   const handleAutoCompleteSelect = (selection, autoCompleteData, defaultFunction) => {
-    if (!selection.suggestion) return
-    // console.log("select", selection)
-    setSearchTerm(selection.suggestion)
-  }
+    if (!selection.suggestion) return;
+    makeQuery(selection.suggestion);
+  };
 
   return (
     <>

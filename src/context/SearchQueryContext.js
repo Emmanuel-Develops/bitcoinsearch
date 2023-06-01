@@ -7,17 +7,15 @@ export const SearchQueryContext = createContext(null);
 export const SearchQueryProvider = ({ children }) => {
   // URL
   const [searchParams, setSearchParams] = useSearchParams();
-
   const searchQuery = searchParams.get("search");
-  console.log("I rerendered")
-  const [searchTerm, setSearchTerm] = useState("");
+
   const [filter, setFilter] = useState([]);
   const [page, setPage] = useState(0);
 
 
-  const buildQueryCall = async (searchTerm, filter, page) => {
+  const buildQueryCall = async (searchQuery, filter, page) => {
     const body = {
-      searchString: searchTerm,
+      searchString: searchQuery,
       // "facets": [
       //     // {"field": "tags", "value": "segwit"}
       //     {"field": "authors", "value": "pieter"}
@@ -48,37 +46,24 @@ export const SearchQueryProvider = ({ children }) => {
   };
 
   const queryResult = useQuery({
-    queryKey: ["query", searchTerm, filter, page],
-    queryFn: () => buildQueryCall(searchTerm, filter, page),
+    queryKey: ["query", searchQuery, filter, page],
+    queryFn: () => buildQueryCall(searchQuery, filter, page),
     cacheTime: Infinity,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
-    enabled: !!searchTerm,
+    enabled: !!searchQuery?.trim(),
   });
 
   const makeQuery = (queryString) => {
-    setSearchParams({ search: queryString })
-  }
-
-  const memoizedSearchQuery = useMemo(() => {
-    return searchQuery
-  }, [searchQuery]);
-
-  useEffect(() => {
-    console.log("memoizedSearch", memoizedSearchQuery);
-  }, [memoizedSearchQuery])
-  
-  useEffect(() => {
-    console.log("unMemoSQ", searchQuery)
-  }, [searchQuery])
+    setSearchParams({ search: queryString });
+  };
 
   // const addFilter = () => {
 
   // };
 
-
   return (
-    <SearchQueryContext.Provider value={{ queryResult, setSearchTerm, makeQuery }}>
+    <SearchQueryContext.Provider value={{ queryResult, makeQuery }}>
       {children}
     </SearchQueryContext.Provider>
   );
